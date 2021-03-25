@@ -7,6 +7,8 @@ if exists("g:loaded_yadi") || &compatible
     finish
 endif
 let g:loaded_yadi = 1
+let s:yadi_ignore_after_trailing = get(g:, 'yadi_ignore_after_trailing', ['(', ',', '=', '->'])
+let s:yadi_ignore_with_leading = get(g:, 'yadi_ignore_with_leading', ['.', '&', '|', '^', '+ ', '- ', '> ', '< ', '= '])
 
 " With -bar these commands can be executed in a single line alongside other
 " commands delimited by a | symbol.
@@ -19,19 +21,39 @@ function s:DetectIndent()
     let spaced = 0
     let indents = {}
     let lastwidth = 0
-    for line in getline(1, 1000) " Get the first 1000 lines
+    let lines = getline(1, 1000) " Get the first 1000 lines
+    for idx in range(len(lines))
+        let line = lines[idx]
+        let ignored = v:false
+        if idx > 0
+            for trailing in s:yadi_ignore_after_trailing
+                if lines[idx - 1][-len(trailing):] == trailing
+                    let ignored = v:true
+                    break
+                endif
+            endfor
+        endif
+        if !ignored
+            let trimmed = trim(line)
+            for leading in s:yadi_ignore_with_leading
+                if trimmed[:len(leading) - 1] == leading
+                    let ignored = v:true
+                    break
+                endif
+            endfor
+        endif
         if line[0] == "\t"
-            let tabbed += 1
+            let tabbed += ignored ? 0 : 1
         else
             " The position of the first non-space character is the
             " indentation width.
             let width = match(line, "[^ ]")
             if width != -1
                 if width > 0
-                    let spaced += 1
+                    let spaced += ignored ? 0 : 1
                 endif
                 let indent = width - lastwidth
-                if indent >= 2 " Minimum indentation is 2 spaces
+                if !ignored && indent >= 2 " Minimum indentation is 2 spaces
                     let indents[indent] = get(indents, indent, 0) + 1
                 endif
                 let lastwidth = width
