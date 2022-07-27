@@ -1,5 +1,5 @@
 " yadi.vim - Yet Another Detect Indent
-" Author:   Tim Schumacher <tim@timakro.de>
+" Author:   Tim Schumacher <tim@tschumacher.net>
 " License:  MIT
 " Version:  1.0.0
 
