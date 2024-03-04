@@ -56,8 +56,11 @@ function s:DetectIndent()
         " Detected over 80% spaces and the most common indentation level makes
         " up over 60% of all indentations in the file.
         set expandtab
-        let &shiftwidth=winner
-        let &softtabstop=winner
+        " only deviate from common defaults on ample evidence
+        if max > 2 || winner == 2 || winner == 4 || winner == 8
+            let &shiftwidth = winner
+            let &softtabstop = winner
+        endif
     endif
 endfunction
 
