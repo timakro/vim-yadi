@@ -19,6 +19,8 @@ function s:DetectIndent()
     let spaced = 0
     let indents = {}
     let lastwidth = 0
+
+    " detect tabs and indents
     for line in getline(1, 1000) " Get the first 1000 lines
         if line[0] == "\t"
             let tabbed += 1
@@ -31,7 +33,8 @@ function s:DetectIndent()
                     let spaced += 1
                 endif
                 let indent = width - lastwidth
-                if indent >= 2 " Minimum indentation is 2 spaces
+                " Minimum indentation is 2 spaces, maximum is 8 spaces
+                if indent >= 2 && indent <= 8
                     let indents[indent] = get(indents, indent, 0) + 1
                 endif
                 let lastwidth = width
@@ -39,25 +42,30 @@ function s:DetectIndent()
         endif
     endfor
 
-    let total = 0
-    let max = 0
-    let winner = -1
-    for [indent, n] in items(indents)
-        let total += n
-        if n > max
-            let max = n
-            let winner = indent
-        endif
-    endfor
-
-    if tabbed > spaced*4 " Over 80% tabs
+    if tabbed > spaced * 4
+      " Detected over 80% spaces and the most common indentation level makes
         set noexpandtab shiftwidth=0 softtabstop=0
-    elseif spaced > tabbed*4 && max*5 > total*3
+    elseif spaced > tabbed * 4
         " Detected over 80% spaces and the most common indentation level makes
-        " up over 60% of all indentations in the file.
         set expandtab
-        let &shiftwidth=winner
-        let &softtabstop=winner
+
+        " find most common indent
+        let total = 0
+        let max = 0
+        let winner = -1
+        for [indent, n] in items(indents)
+            let total += n
+            if n > max
+                let max = n
+                let winner = indent
+            endif
+        endfor
+
+        if max * 5 > total * 3
+            " up over 60% of all indentations in the file.
+            let &shiftwidth = winner
+            let &softtabstop = winner
+        endif
     endif
 endfunction
 
