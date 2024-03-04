@@ -31,7 +31,8 @@ function s:DetectIndent()
                     let spaced += 1
                 endif
                 let indent = width - lastwidth
-                if indent >= 2 " Minimum indentation is 2 spaces
+		" Minimum indentation is 2 spaces, maximum is 8 spaces
+                if indent >= 2 && indent <= 8
                     let indents[indent] = get(indents, indent, 0) + 1
                 endif
                 let lastwidth = width

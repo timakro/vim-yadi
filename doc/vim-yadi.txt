@@ -74,9 +74,9 @@ it well:
     adds the difference to a tally. So if a line is indented by 10 spaces, and
     the previous by 8, one more vote would be added for 2-space indentation.
 <
-Mixed tabs and spaces as well as 1-space indentation are not supported. This is
-a deliberate choice as these indentation styles are rare and would complicate
-the algorithm considerably.
+Mixed tabs and spaces, 1-space indentation, as well as more than 8 spaces are
+not supported. This is a deliberate choice as these indentation styles are rare
+and would complicate the algorithm considerably.
 
 Furthermore there is a heuristic in place to prevent misdetection. More than
 80% of the file must be either tabs or spaces for the detection to succeed.
