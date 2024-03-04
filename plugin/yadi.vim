@@ -33,7 +33,8 @@ function s:DetectIndent()
                     let spaced += 1
                 endif
                 let indent = width - lastwidth
-                if indent >= 2 " Minimum indentation is 2 spaces
+                " Minimum indentation is 2 spaces, maximum is 8 spaces
+                if indent >= 2 && indent <= 8
                     let indents[indent] = get(indents, indent, 0) + 1
                 endif
                 let lastwidth = width
@@ -62,7 +63,6 @@ function s:DetectIndent()
 
         if max * 5 > total * 3
             " up over 60% of all indentations in the file.
-            let winner = min([winner, 8])
             let &shiftwidth = winner
             let &softtabstop = winner
         endif
